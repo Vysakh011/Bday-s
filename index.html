@@ -289,6 +289,109 @@
   }
 
   /* =========================================================
+     PHOTO GALLERY
+     ========================================================= */
+  #gallery-btn{
+    position:absolute; bottom:6%; left:50%; transform:translateX(-50%);
+    z-index:8;
+    font-family:var(--font-label);
+    letter-spacing:.18em; font-size:.68rem; text-transform:uppercase;
+    color:var(--backdrop-1);
+    background:linear-gradient(180deg, var(--gold-light), var(--gold));
+    border:none; border-radius:999px;
+    padding:.85em 1.6em;
+    cursor:pointer;
+    box-shadow:0 8px 20px -6px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.5);
+    opacity:0; pointer-events:none;
+    transform:translateX(-50%) translateY(14px);
+    transition:opacity .6s ease, transform .6s ease;
+  }
+  #gallery-btn.visible{
+    opacity:1; pointer-events:auto;
+    transform:translateX(-50%) translateY(0);
+  }
+  #gallery-btn:hover{ filter:brightness(1.06); }
+
+  #gallery-overlay{
+    position:fixed; inset:0; z-index:50;
+    background:rgba(16,10,8,.92);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    opacity:0; pointer-events:none;
+    transition:opacity .45s ease;
+  }
+  #gallery-overlay.active{ opacity:1; pointer-events:auto; }
+
+  #gallery-title{
+    font-family:var(--font-script);
+    font-size:clamp(1.6rem,4.5vw,2.4rem);
+    color:var(--gold-light);
+    margin-bottom:3vh;
+    text-align:center;
+    padding:0 6%;
+  }
+
+  #gallery-strip{
+    display:flex; gap:20px;
+    overflow-x:auto; overflow-y:hidden;
+    max-width:92vw;
+    padding:2vh 4vw 3vh;
+    scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;
+  }
+  #gallery-strip::-webkit-scrollbar{ height:8px; }
+  #gallery-strip::-webkit-scrollbar-thumb{ background:var(--gold-deep); border-radius:4px; }
+  #gallery-strip::-webkit-scrollbar-track{ background:rgba(255,255,255,.06); }
+
+  .polaroid{
+    flex:0 0 auto;
+    scroll-snap-align:center;
+    width:min(52vw, 220px);
+    background:var(--ivory);
+    padding:10px 10px 32px;
+    border-radius:3px;
+    box-shadow:0 14px 26px -10px rgba(0,0,0,.6);
+    transform:rotate(var(--tilt,0deg));
+    transition:transform .3s ease;
+  }
+  .polaroid:hover{ transform:rotate(0deg) scale(1.03); }
+  .polaroid .photo-slot{
+    width:100%; aspect-ratio:1/1;
+    background:
+      linear-gradient(135deg, #e9d8ae, #cdb98a);
+    border-radius:1px;
+    overflow:hidden;
+    display:flex; align-items:center; justify-content:center;
+    position:relative;
+  }
+  .polaroid .photo-slot img{
+    width:100%; height:100%; object-fit:cover; display:block;
+  }
+  .polaroid .photo-slot .placeholder-num{
+    font-family:var(--font-label);
+    font-size:1.1rem; color:var(--gold-deep); opacity:.55;
+    letter-spacing:.05em;
+  }
+  .polaroid .caption{
+    display:block; text-align:center; margin-top:10px;
+    font-family:var(--font-script);
+    font-size:1.05rem; color:var(--ink);
+  }
+
+  #gallery-close{
+    margin-top:1vh;
+    font-family:var(--font-label);
+    letter-spacing:.18em; font-size:.68rem; text-transform:uppercase;
+    color:var(--gold-light);
+    background:transparent;
+    border:1px solid var(--gold-deep);
+    border-radius:999px;
+    padding:.7em 1.8em;
+    cursor:pointer;
+    transition:background .25s ease, color .25s ease;
+  }
+  #gallery-close:hover{ background:var(--gold-deep); color:var(--ivory); }
+
+  /* =========================================================
      RESPONSIVE
      ========================================================= */
   @media (max-width:560px){
@@ -319,7 +422,7 @@
             <div class="candle" style="left:50%;"><div class="flame" style="animation-delay:-.6s;"></div></div>
             <div class="candle" style="left:62%;"><div class="flame" style="animation-delay:-.9s;"></div></div>
           </div>
-          <div class="headline">Happy Birthday<br>Ponaaaa ❤️</div>
+          <div class="headline">Happy Birthday<br>Sonechiii ❤️</div>
           <p class="message" id="messageText">Another year of your beautiful heart lighting up every room you walk into. I hope today wraps you in every bit of the love, laughter, and softness you give so freely to everyone around you. Here's to you, today and always.</p>
           <div class="signoff">With all the love</div>
         </div>
@@ -329,9 +432,17 @@
       </div>
     </div>
 
-    <p id="hint">   </p>
+    <p id="hint">Click the card to open</p>
+
+    <button id="gallery-btn" type="button">View Our Memories</button>
 
     <div id="celebration-layer"></div>
+  </div>
+
+  <div id="gallery-overlay">
+    <div id="gallery-title">Our Little Moments</div>
+    <div id="gallery-strip"></div>
+    <button id="gallery-close" type="button">Close</button>
   </div>
 
   <div id="vignette"></div>
@@ -345,6 +456,60 @@
   var hint   = document.getElementById('hint');
   var celeb  = document.getElementById('celebration-layer');
   var ambient= document.getElementById('ambient-layer');
+  var galleryBtn = document.getElementById('gallery-btn');
+  var galleryOverlay = document.getElementById('gallery-overlay');
+  var galleryStrip = document.getElementById('gallery-strip');
+  var galleryClose = document.getElementById('gallery-close');
+
+  /* ---------- photo gallery ----------
+     PHOTO_COUNT photos are expected as photos/1.jpg, photos/2.jpg ... photos/26.jpg
+     placed in a "photos" folder next to this HTML file.
+     If a file is missing, a placeholder tile with its number is shown instead,
+     so you can drop in your real photos (any of them, in any order) whenever ready. */
+  var PHOTO_COUNT = 26;
+  var PHOTO_FOLDER = 'photos/';
+
+  function buildGallery(){
+    if (galleryStrip.childElementCount) return; // build once
+    for (var i = 1; i <= PHOTO_COUNT; i++){
+      var card_el = document.createElement('div');
+      card_el.className = 'polaroid';
+      card_el.style.setProperty('--tilt', (Math.random()*6 - 3)+'deg');
+
+      var slot = document.createElement('div');
+      slot.className = 'photo-slot';
+
+      var img = document.createElement('img');
+      img.src = PHOTO_FOLDER + i + '.jpg';
+      img.alt = 'Memory ' + i;
+      img.loading = 'lazy';
+      img.onerror = function(){
+        var num = document.createElement('span');
+        num.className = 'placeholder-num';
+        num.textContent = '#' + this.alt.replace('Memory ', '');
+        this.replaceWith(num);
+      };
+      slot.appendChild(img);
+
+      var caption = document.createElement('span');
+      caption.className = 'caption';
+      caption.textContent = '❤';
+
+      card_el.appendChild(slot);
+      card_el.appendChild(caption);
+      galleryStrip.appendChild(card_el);
+    }
+  }
+
+  function openGallery(){
+    buildGallery();
+    galleryOverlay.classList.add('active');
+  }
+  function closeGallery(){
+    galleryOverlay.classList.remove('active');
+  }
+  galleryBtn.addEventListener('click', openGallery);
+  galleryClose.addEventListener('click', closeGallery);
 
   var isMobile = window.innerWidth < 620;
   var celebrationTimers = [];
@@ -520,11 +685,14 @@
       hint.classList.add('hidden');
       setTimeout(function(){
         startCelebration();
+        galleryBtn.classList.add('visible');
       }, 700);
     } else {
       clearCelebration();
       isOpen = false;
       card.classList.remove('open');
+      galleryBtn.classList.remove('visible');
+      closeGallery();
       setHint('Click the card to open');
     }
   }
