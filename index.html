@@ -1,227 +1,387 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Happy Birthday, Sonechiii!</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #fce4ec; /* Light pink background */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            overflow: hidden; /* Prevent scrollbars during animations */
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday Sonechiii ❤️</title>
 
-        .card-container {
-            perspective: 1500px; /* Essential for 3D flip effect */
-            cursor: pointer;
-        }
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
-        .card {
-            width: 350px;
-            height: 500px;
-            position: relative;
-            transform-style: preserve-3d;
-            transition: transform 1s ease-in-out;
-            border-radius: 15px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-        }
+<style>
 
-        .card.open {
-            transform: rotateY(-160deg); /* Adjust for how far the cover opens */
-        }
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Poppins,sans-serif;
+}
 
-        .card-front, .card-back {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-            backface-visibility: hidden; /* Hide the back when the front is visible */
-            border-radius: 15px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 30px;
-            box-sizing: border-box;
-            text-align: center;
-        }
+body{
+height:100vh;
+overflow:hidden;
+display:flex;
+justify-content:center;
+align-items:center;
+background:linear-gradient(135deg,#ffdde1,#ee9ca7,#fad0c4);
+perspective:1800px;
+}
 
-        /* Front Cover Styles */
-        .card-front {
-            background-color: #e91e63; /* Pink cover color */
-            color: white;
-            transform: rotateY(0deg); /* Initial position */
-            z-index: 2; /* Put the cover in front */
-        }
+/* Card */
 
-        .card-front h1 {
-            font-size: 3em;
-            margin-bottom: 20px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
+.card{
+position:relative;
+width:380px;
+height:520px;
+cursor:pointer;
+transform-style:preserve-3d;
+transition:1.5s;
+}
 
-        .card-front p {
-            font-size: 1.2em;
-        }
+.card.open{
+transform:rotateY(-180deg);
+}
 
-        /* Inside (Back) of Cover Styles */
-        .card-back {
-            background-color: #fff1f6; /* Inside color */
-            color: #333;
-            transform: rotateY(180deg); /* Start rotated, then flip reveals it */
-            border: 5px solid #e91e63;
-        }
+.cover,.inside{
+position:absolute;
+width:100%;
+height:100%;
+border-radius:18px;
+backface-visibility:hidden;
+overflow:hidden;
+box-shadow:0 20px 50px rgba(0,0,0,.25);
+}
 
-        .card-back h2 {
-            color: #e91e63;
-            font-size: 2.5em;
-            margin-top: 0;
-        }
+/* Front */
 
-        .card-back p {
-            font-size: 1.1em;
-            line-height: 1.6;
-        }
+.cover{
+background:linear-gradient(135deg,#ff4d6d,#ff7aa2,#ffb3c6);
+display:flex;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+color:white;
+font-size:2.5rem;
+font-weight:bold;
+letter-spacing:2px;
+}
 
-        /* Ballon Styles */
-        .balloon {
-            position: fixed;
-            bottom: -100px; /* Start off-screen at the bottom */
-            width: 50px;
-            height: 70px;
-            border-radius: 50%;
-            opacity: 0.8;
-            pointer-events: none; /* Make balloons unclickable */
-            z-index: 1; /* Below the card, above the background */
-            animation: floatUp infinite ease-in-out;
-        }
+.cover h1{
+font-family:"Great Vibes",cursive;
+font-size:65px;
+}
 
-        @keyframes floatUp {
-            0% { transform: translateY(0) rotate(0deg); opacity: 0.8; }
-            100% { transform: translateY(-120vh) rotate(var(--rotation)); opacity: 0; }
-        }
+.cover p{
+margin-top:20px;
+font-size:18px;
+opacity:.9;
+}
 
-        /* Popper Styles */
-        .popper {
-            position: fixed;
-            bottom: 20px;
-            font-size: 3em;
-            opacity: 0;
-            pointer-events: none;
-            z-index: 10; /* Above everything */
-        }
+.cover::before{
+content:"🎂";
+font-size:80px;
+margin-bottom:20px;
+}
 
-        .popper-left { left: 20px; animation: popLeft 0.5s ease-out forwards; }
-        .popper-right { right: 20px; animation: popRight 0.5s ease-out forwards; }
+/* Inside */
 
-        @keyframes popLeft {
-            0% { transform: scale(0) rotate(-45deg); opacity: 0; }
-            50% { transform: scale(1.2) rotate(0deg); opacity: 1; }
-            100% { transform: scale(1) rotate(0deg); opacity: 0; } /* Fade out */
-        }
+.inside{
+background:white;
+transform:rotateY(180deg);
+padding:40px;
+display:flex;
+justify-content:center;
+align-items:center;
+text-align:center;
+}
 
-        @keyframes popRight {
-            0% { transform: scale(0) rotate(45deg); opacity: 0; }
-            50% { transform: scale(1.2) rotate(0deg); opacity: 1; }
-            100% { transform: scale(1) rotate(0deg); opacity: 0; } /* Fade out */
-        }
-    </style>
+.content h2{
+font-family:"Great Vibes",cursive;
+font-size:56px;
+color:#ff3f73;
+margin-bottom:20px;
+}
+
+.content p{
+font-size:18px;
+line-height:1.8;
+color:#555;
+}
+
+.signature{
+margin-top:35px;
+font-size:20px;
+color:#ff4d6d;
+font-weight:bold;
+}
+
+/* Balloons */
+
+.balloon{
+position:absolute;
+bottom:-150px;
+width:45px;
+height:60px;
+border-radius:50%;
+animation:float linear forwards;
+}
+
+.balloon:after{
+content:"";
+position:absolute;
+width:2px;
+height:70px;
+background:#666;
+left:50%;
+top:60px;
+}
+
+@keyframes float{
+
+0%{
+transform:translateY(0);
+opacity:1;
+}
+
+90%{
+opacity:1;
+}
+
+100%{
+transform:translateY(-120vh);
+opacity:0;
+}
+
+}
+
+/* Confetti */
+
+.confetti{
+position:absolute;
+width:10px;
+height:14px;
+animation:blast 2.5s ease-out forwards;
+}
+
+@keyframes blast{
+
+0%{
+transform:translate(0,0) rotate(0);
+opacity:1;
+}
+
+100%{
+transform:translate(var(--x),var(--y)) rotate(720deg);
+opacity:0;
+}
+
+}
+
+/* Hearts */
+
+.heart{
+position:absolute;
+font-size:22px;
+animation:heartFloat 5s linear forwards;
+opacity:.8;
+}
+
+@keyframes heartFloat{
+0%{
+transform:translateY(0) scale(.7);
+opacity:0;
+}
+20%{
+opacity:1;
+}
+100%{
+transform:translateY(-110vh) scale(1.4);
+opacity:0;
+}
+}
+
+.tap{
+position:absolute;
+bottom:30px;
+font-size:15px;
+animation:pulse 1.5s infinite;
+}
+
+@keyframes pulse{
+50%{transform:scale(1.1);}
+}
+
+</style>
 </head>
+
 <body>
 
-    <div class="card-container" onclick="openCard()">
-        <div class="card" id="birthdayCard">
-            <!-- Front of the Card -->
-            <div class="card-front">
-                <h1>Happy Birthday...</h1>
-                <p>Click to open!</p>
-            </div>
-            <!-- Inside of the Card -->
-            <div class="card-back">
-                <h2>Happy Birthday, Sonechiii!</h2>
-                <p>Wishing you the happiest of birthdays today!</p>
-                <p>May your day be filled with love, laughter, joy, and everything you wish for.</p>
-                <p>You deserve all the happiness in the world. Enjoy your special day to the fullest!</p>
-            </div>
-        </div>
-    </div>
+<div class="card" id="card">
 
-    <!-- Container for balloons -->
-    <div id="balloon-container"></div>
+<div class="cover">
 
-    <script>
-        // Array of possible balloon colors
-        const balloonColors = ['#ff1744', '#f50057', '#d500f9', '#651fff', '#3d5afe', '#2979ff', '#00b0ff', '#00e5ff', '#1de9b6', '#00e676', '#76ff03', '#c6ff00', '#ffea00', '#ffc400', '#ff9100', '#ff3d00'];
+<h1>Happy Birthday</h1>
 
-        function openCard() {
-            const card = document.getElementById('birthdayCard');
-            // If card is already open, do nothing (prevent re-popping)
-            if (card.classList.contains('open')) return; 
+<p>Click to Open ❤️</p>
 
-            card.classList.add('open');
+<div class="tap">🎁 Tap Me 🎁</div>
 
-            // Trigger animations
-            createBalloons();
-            triggerPoppers();
-        }
+</div>
 
-        function createBalloons() {
-            const container = document.getElementById('balloon-container');
-            const numBalloons = 30; // Number of balloons to create
+<div class="inside">
 
-            for (let i = 0; i < numBalloons; i++) {
-                const balloon = document.createElement('div');
-                balloon.classList.add('balloon');
+<div class="content">
 
-                // Random color
-                balloon.style.backgroundColor = balloonColors[Math.floor(Math.random() * balloonColors.length)];
+<h2>Happy Birthday Sonechiii ❤️</h2>
 
-                // Random horizontal starting position
-                balloon.style.left = `${Math.random() * 100}vw`;
+<p>
 
-                // Random animation duration and delay
-                const duration = 5 + Math.random() * 5; // 5 to 10 seconds
-                const delay = Math.random() * 3; // 0 to 3 seconds
-                balloon.style.animationDuration = `${duration}s`;
-                balloon.style.animationDelay = `${delay}s`;
+May this beautiful day bring you endless happiness,
+lots of smiles, wonderful memories, and dreams that
+come true.
 
-                // Set a CSS variable for random rotation in animation
-                const rotation = -30 + Math.random() * 60; // -30 to +30 degrees
-                balloon.style.setProperty('--rotation', `${rotation}deg`);
+<br><br>
 
-                container.appendChild(balloon);
+You deserve all the love, laughter, and success in the
+world. May every moment of your life be filled with joy,
+good health, and countless reasons to smile.
 
-                // Remove balloon element after animation finishes
-                setTimeout(() => {
-                    balloon.remove();
-                }, (duration + delay) * 1000); 
-            }
-        }
+<br><br>
 
-        function triggerPoppers() {
-            // Create popper elements (simple emojis)
-            const leftPopper = document.createElement('div');
-            leftPopper.classList.add('popper', 'popper-left');
-            leftPopper.innerText = '🎉';
-            document.body.appendChild(leftPopper);
+Keep shining, keep smiling, and never stop being the
+wonderful person you are.
 
-            const rightPopper = document.createElement('div');
-            rightPopper.classList.add('popper', 'popper-right');
-            rightPopper.innerText = '🥳';
-            document.body.appendChild(rightPopper);
+🎂🎈✨
 
-            // Remove poppers after animation finishes (0.5s)
-            setTimeout(() => {
-                leftPopper.remove();
-                rightPopper.remove();
-            }, 1000); // 1 second to give a little time after fading out
-        }
-    </script>
+</p>
+
+<div class="signature">
+
+With lots of love ❤️
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+const card=document.getElementById("card");
+
+let opened=false;
+
+card.onclick=()=>{
+
+if(opened)return;
+
+opened=true;
+
+card.classList.add("open");
+
+balloons();
+
+confetti();
+
+hearts();
+
+};
+
+function balloons(){
+
+const colors=[
+"#ff4d6d",
+"#4dabf7",
+"#ffd43b",
+"#51cf66",
+"#845ef7",
+"#ff922b"
+];
+
+for(let i=0;i<35;i++){
+
+let b=document.createElement("div");
+b.className="balloon";
+
+b.style.background=colors[Math.floor(Math.random()*colors.length)];
+
+b.style.left=Math.random()*100+"vw";
+
+b.style.animationDuration=(6+Math.random()*5)+"s";
+
+b.style.animationDelay=Math.random()*2+"s";
+
+document.body.appendChild(b);
+
+setTimeout(()=>b.remove(),12000);
+
+}
+
+}
+
+function confetti(){
+
+const colors=["#ff006e","#ffd60a","#3a86ff","#06d6a0","#ffbe0b","#8338ec"];
+
+for(let side=0;side<2;side++){
+
+for(let i=0;i<120;i++){
+
+let c=document.createElement("div");
+c.className="confetti";
+
+c.style.background=colors[Math.floor(Math.random()*colors.length)];
+
+c.style.left=(side==0?0:window.innerWidth)+"px";
+
+c.style.top=(window.innerHeight/2)+"px";
+
+let x=(side==0?
+Math.random()*600:
+-Math.random()*600)+"px";
+
+let y=(Math.random()*700-350)+"px";
+
+c.style.setProperty("--x",x);
+
+c.style.setProperty("--y",y);
+
+document.body.appendChild(c);
+
+setTimeout(()=>c.remove(),2600);
+
+}
+
+}
+
+}
+
+function hearts(){
+
+const icons=["❤️","💖","💕","💗"];
+
+setInterval(()=>{
+
+let h=document.createElement("div");
+
+h.className="heart";
+
+h.innerHTML=icons[Math.floor(Math.random()*icons.length)];
+
+h.style.left=Math.random()*100+"vw";
+
+h.style.bottom="-30px";
+
+document.body.appendChild(h);
+
+setTimeout(()=>h.remove(),5000);
+
+},300);
+
+}
+
+</script>
+
 </body>
 </html>
