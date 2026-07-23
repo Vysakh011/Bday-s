@@ -1,6 +1,4 @@
 <!DOCTYPE html>
-
-
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -10,22 +8,16 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=WindSong:wght@400;500&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Cinzel:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  /* =========================================================
-     DESIGN TOKENS
-     ========================================================= */
   :root{
     --ink:#3b2e22;
     --cream:#f2e6c9;
     --cream-2:#e9d8ae;
-    --cream-shadow:#cdb98a;
     --ivory:#fffcf4;
     --ivory-shadow:#f1e6cf;
     --gold:#c9a227;
     --gold-light:#f3d878;
     --gold-deep:#8a6a13;
     --wax:#7a1f2b;
-    --wax-dark:#571219;
-    --wax-light:#a1394a;
     --backdrop-1:#1c1210;
     --backdrop-2:#2c1a15;
     --rose:#d98fa0;
@@ -51,7 +43,6 @@
     perspective:2400px;
   }
 
-  /* subtle vignette + paper grain over everything */
   #grain{
     position:fixed; inset:0; pointer-events:none; z-index:60;
     opacity:.05; mix-blend-mode:overlay;
@@ -62,7 +53,6 @@
     box-shadow: inset 0 0 22vw 4vw rgba(0,0,0,.55);
   }
 
-  /* ambient floating light particles, always drifting softly */
   #ambient-layer{
     position:fixed; inset:0; pointer-events:none; z-index:1; overflow:hidden;
   }
@@ -91,171 +81,12 @@
   #hint.hidden{ opacity:0; pointer-events:none; }
 
   /* =========================================================
-     ENVELOPE
-     ========================================================= */
-  #envelope-wrap{
-    position:relative;
-    width:min(78vw, 480px);
-    height:min(78vw*0.66, 320px);
-    transform-style:preserve-3d;
-  }
-
-  #envelope{
-    position:absolute; inset:0;
-    transform-style:preserve-3d;
-  }
-
-  .env-back{
-    position:absolute; inset:0;
-    background:
-      linear-gradient(135deg, var(--cream) 0%, var(--cream-2) 100%);
-    border-radius:6px;
-    box-shadow:
-      0 30px 60px -20px rgba(0,0,0,.65),
-      0 8px 18px -6px rgba(0,0,0,.4);
-    z-index:1;
-  }
-  .env-back::after{
-    /* subtle paper texture */
-    content:''; position:absolute; inset:0; border-radius:6px;
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
-    opacity:.12; mix-blend-mode:multiply;
-  }
-
-  /* pocket front - the lower triangular part of the envelope, sits above the card, below flap */
-  .env-pocket{
-    position:absolute; left:0; right:0; bottom:0; height:100%;
-    background:linear-gradient(160deg, var(--cream) 0%, var(--cream-2) 90%);
-    clip-path:polygon(0 100%, 0 34%, 50% 62%, 100% 34%, 100% 100%);
-    z-index:4;
-    border-radius:0 0 6px 6px;
-    box-shadow: inset 0 6px 14px -6px rgba(0,0,0,.18);
-  }
-  .env-pocket::before{
-    content:''; position:absolute; inset:0;
-    clip-path:polygon(0 100%, 0 34%, 50% 62%, 100% 34%, 100% 100%);
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
-    opacity:.12; mix-blend-mode:multiply;
-  }
-
-  /* card slot - where the greeting card lives and slides */
-  .card-slot{
-    position:absolute; left:6%; right:6%; top:8%; bottom:8%;
-    z-index:2;
-    display:flex; align-items:flex-start; justify-content:center;
-    transform:translateY(6%);
-    transition:transform 1.1s cubic-bezier(.42,0,.15,1);
-    will-change:transform;
-  }
-  #envelope-wrap[data-state="card-out"] .card-slot,
-  #envelope-wrap[data-state="card-open"] .card-slot,
-  #envelope-wrap[data-state="celebrating"] .card-slot{
-    transform:translateY(-92%);
-    z-index:6;
-  }
-  #envelope-wrap[data-state="closing-card"] .card-slot{
-    transform:translateY(-92%);
-    z-index:6;
-  }
-  #envelope-wrap[data-state="sliding-in"] .card-slot{
-    transform:translateY(6%);
-    z-index:2;
-  }
-
-  /* flap - folds open/closed at the top edge */
-  .env-flap{
-    position:absolute; left:0; right:0; top:0; height:66%;
-    background:linear-gradient(200deg, var(--cream-2) 0%, var(--cream) 70%);
-    clip-path:polygon(0 0, 100% 0, 50% 100%);
-    transform-origin:top center;
-    transform:rotateX(0deg);
-    transition:transform 1s cubic-bezier(.6,-0.1,.2,1), z-index 0s .5s;
-    box-shadow:0 2px 10px rgba(0,0,0,.15);
-    z-index:5;
-  }
-  .env-flap::after{
-    content:''; position:absolute; inset:0;
-    clip-path:polygon(0 0, 100% 0, 50% 100%);
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
-    opacity:.12; mix-blend-mode:multiply;
-  }
-  #envelope-wrap[data-state="open"] .env-flap,
-  #envelope-wrap[data-state="card-out"] .env-flap,
-  #envelope-wrap[data-state="card-open"] .env-flap,
-  #envelope-wrap[data-state="celebrating"] .env-flap,
-  #envelope-wrap[data-state="closing-card"] .env-flap,
-  #envelope-wrap[data-state="sliding-in"] .env-flap{
-    transform:rotateX(-178deg);
-    z-index:0;
-    transition:transform 1s cubic-bezier(.6,-0.1,.2,1), z-index 0s 0s;
-  }
-
-  .flap-label{
-    position:absolute; top:34%; left:50%; transform:translate(-50%,-50%);
-    font-family:var(--font-script);
-    font-size:clamp(1.3rem, 3.4vw, 2rem);
-    color:var(--gold-deep);
-    letter-spacing:.02em;
-    text-shadow:0 1px 0 rgba(255,255,255,.4);
-    white-space:nowrap;
-    z-index:2;
-    pointer-events:none;
-  }
-
-  /* wax seal */
-  .wax-seal{
-    position:absolute; left:50%; top:34%; transform:translate(-50%,-50%);
-    width:76px; height:76px; z-index:8; cursor:pointer;
-    transition:opacity .3s ease;
-  }
-  .wax-seal:hover .wax-piece{ filter:brightness(1.08); }
-  .wax-piece{
-    position:absolute; inset:0; border-radius:50%;
-    background:
-      radial-gradient(circle at 32% 28%, var(--wax-light), var(--wax) 45%, var(--wax-dark) 100%);
-    box-shadow:
-      0 4px 10px rgba(0,0,0,.45),
-      inset 0 2px 3px rgba(255,255,255,.25),
-      inset 0 -4px 8px rgba(0,0,0,.35);
-    transition:transform .8s cubic-bezier(.3,-0.4,.4,1.4), opacity .8s ease;
-  }
-  .wax-piece.left{ clip-path:polygon(0 0,50% 0,50% 100%,0 100%); }
-  .wax-piece.right{ clip-path:polygon(50% 0,100% 0,100% 100%,50% 100%); }
-  .wax-seal .seal-emblem{
-    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
-    font-family:var(--font-script); font-size:1.6rem; color:rgba(255,225,150,.85);
-    pointer-events:none; user-select:none;
-  }
-  .wax-seal.cracked .wax-piece.left{
-    transform:translate(-38px,42px) rotate(-55deg); opacity:0;
-  }
-  .wax-seal.cracked .wax-piece.right{
-    transform:translate(38px,42px) rotate(55deg); opacity:0;
-  }
-  .wax-seal.hidden{ opacity:0; pointer-events:none; }
-  .wax-seal.restamp{ animation:restamp .6s cubic-bezier(.3,-0.3,.3,1.3); }
-  @keyframes restamp{
-    0%{ transform:translate(-50%,-50%) scale(2.4); opacity:0; }
-    60%{ opacity:1; }
-    100%{ transform:translate(-50%,-50%) scale(1); opacity:1; }
-  }
-
-  /* gold dust burst container */
-  .dust-particle{
-    position:absolute; border-radius:50%; pointer-events:none;
-    background:radial-gradient(circle, var(--gold-light), var(--gold) 70%, transparent 100%);
-    z-index:9;
-  }
-
-  /* =========================================================
      GREETING CARD
      ========================================================= */
   .card{
     position:relative;
-    width:100%;
-    max-width:340px;
-    height:0;
-    padding-bottom:132%;
+    width:min(78vw, 340px, 61vh);
+    aspect-ratio: 340 / 449;
     transform-style:preserve-3d;
     perspective:1800px;
   }
@@ -315,6 +146,7 @@
     transition:transform 1.3s cubic-bezier(.6,-0.15,.15,1);
     display:flex; align-items:center; justify-content:center;
     border:1px solid rgba(201,162,39,.3);
+    cursor:pointer;
   }
   .card-cover::before{
     content:''; position:absolute; inset:8px;
@@ -328,8 +160,7 @@
     text-align:center; padding:0 8%;
     line-height:1.3;
   }
-  #envelope-wrap[data-state="card-open"] .card-cover,
-  #envelope-wrap[data-state="celebrating"] .card-cover{
+  .card.open .card-cover{
     transform:rotateY(-168deg);
   }
 
@@ -461,12 +292,9 @@
      RESPONSIVE
      ========================================================= */
   @media (max-width:560px){
-    #envelope-wrap{ width:82vw; height:calc(82vw*0.66); }
-    .wax-seal{ width:60px; height:60px; }
-    .card{ max-width:78vw; }
+    .card{ width:min(82vw, 61vh); }
   }
 
-  /* respect reduced motion */
   @media (prefers-reduced-motion: reduce){
     *{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.2s !important; }
   }
@@ -479,47 +307,29 @@
   <div id="stage">
     <div id="ambient-layer"></div>
 
-    <div id="envelope-wrap" data-state="closed" tabindex="0" aria-label="Birthday envelope, click the wax seal to open">
-      <div id="envelope">
-        <div class="env-back"></div>
-
-        <div class="card-slot">
-          <div class="card" id="card" role="button" aria-label="Birthday card">
-            <div class="card-inside">
-              <div class="inside-border">
-                <div class="cake-wrap">
-                  <div class="cake-glow"></div>
-                  <div class="tier t1"></div>
-                  <div class="tier t2"></div>
-                  <div class="tier t3"></div>
-                  <div class="candle" style="left:38%;"><div class="flame" style="animation-delay:-.2s;"></div></div>
-                  <div class="candle" style="left:50%;"><div class="flame" style="animation-delay:-.6s;"></div></div>
-                  <div class="candle" style="left:62%;"><div class="flame" style="animation-delay:-.9s;"></div></div>
-                </div>
-                <div class="headline">Happy Birthday<br>Sonechiii ❤️</div>
-                <p class="message" id="messageText">Another year of your beautiful heart lighting up every room you walk into. I hope today wraps you in every bit of the love, laughter, and softness you give so freely to everyone around you. Here's to you, today and always.</p>
-                <div class="signoff">With all the love</div>
-              </div>
-            </div>
-            <div class="card-cover">
-              <div class="cover-text">Happy Birthday<br>                          .                      </div>
-            </div>
+    <div class="card" id="card" role="button" tabindex="0" aria-label="Birthday card, click to open">
+      <div class="card-inside">
+        <div class="inside-border">
+          <div class="cake-wrap">
+            <div class="cake-glow"></div>
+            <div class="tier t1"></div>
+            <div class="tier t2"></div>
+            <div class="tier t3"></div>
+            <div class="candle" style="left:38%;"><div class="flame" style="animation-delay:-.2s;"></div></div>
+            <div class="candle" style="left:50%;"><div class="flame" style="animation-delay:-.6s;"></div></div>
+            <div class="candle" style="left:62%;"><div class="flame" style="animation-delay:-.9s;"></div></div>
           </div>
-        </div>
-
-        <div class="env-pocket"></div>
-        <div class="env-flap">
-          <div class="flap-label">      </div>
-        </div>
-
-        <div class="wax-seal" id="waxSeal" role="button" aria-label="Wax seal, click to open envelope">
-          <div class="wax-piece left"></div>
-          <div class="wax-piece right"></div>
-          <div class="seal-emblem">S</div>
+          <div class="headline">Happy Birthday<br>Sonechiii ❤️</div>
+          <p class="message" id="messageText">Another year of your beautiful heart lighting up every room you walk into. I hope today wraps you in every bit of the love, laughter, and softness you give so freely to everyone around you. Here's to you, today and always.</p>
+          <div class="signoff">With all the love</div>
         </div>
       </div>
-      <p id="hint">Click the seal to open</p>
+      <div class="card-cover">
+        <div class="cover-text">Happy Birthday</div>
+      </div>
     </div>
+
+    <p id="hint">Click the card to open</p>
 
     <div id="celebration-layer"></div>
   </div>
@@ -531,8 +341,6 @@
 (function(){
   "use strict";
 
-  var wrap   = document.getElementById('envelope-wrap');
-  var seal   = document.getElementById('waxSeal');
   var card   = document.getElementById('card');
   var hint   = document.getElementById('hint');
   var celeb  = document.getElementById('celebration-layer');
@@ -540,9 +348,7 @@
 
   var isMobile = window.innerWidth < 620;
   var celebrationTimers = [];
-  var ambientTimer = null;
 
-  function setState(s){ wrap.setAttribute('data-state', s); }
   function setHint(text){
     hint.textContent = text;
     hint.classList.remove('hidden');
@@ -565,39 +371,9 @@
   }
   function startAmbient(){
     spawnMote();
-    ambientTimer = setInterval(spawnMote, isMobile ? 1400 : 850);
+    setInterval(spawnMote, isMobile ? 1400 : 850);
   }
   startAmbient();
-
-  /* ---------- gold dust burst from the wax seal ---------- */
-  function goldDustBurst(){
-    var rect = seal.getBoundingClientRect();
-    var cx = rect.left + rect.width/2;
-    var cy = rect.top + rect.height/2;
-    var count = isMobile ? 18 : 30;
-    for (var i=0; i<count; i++){
-      (function(){
-        var p = document.createElement('div');
-        p.className = 'dust-particle';
-        var size = 2 + Math.random()*4;
-        p.style.width = size+'px';
-        p.style.height = size+'px';
-        p.style.left = cx+'px';
-        p.style.top = cy+'px';
-        document.body.appendChild(p);
-        var angle = Math.random()*Math.PI*2;
-        var dist = 40 + Math.random()*90;
-        var tx = Math.cos(angle)*dist;
-        var ty = Math.sin(angle)*dist - 20;
-        var dur = 700 + Math.random()*500;
-        p.animate([
-          { transform:'translate(0,0) scale(1)', opacity:1 },
-          { transform:'translate('+tx+'px,'+ty+'px) scale(.3)', opacity:0 }
-        ], { duration:dur, easing:'cubic-bezier(.2,.7,.3,1)', fill:'forwards' });
-        setTimeout(function(){ p.remove(); }, dur+50);
-      })();
-    }
-  }
 
   /* ---------- balloons ---------- */
   var balloonColors = ['#c9424e','#e0a13a','#3f7a5b','#7859a8','#c96b9e','#3a6b8a','#d4af37'];
@@ -727,7 +503,6 @@
     popperBurst(6);
     popperBurst(94);
     startSparkles();
-    // gentle continuous trickle of extra balloons/petals while card stays open
     var trickle = setInterval(function(){
       spawnBalloons(3);
       spawnPetals(4);
@@ -735,65 +510,27 @@
     celebrationTimers.push(trickle);
   }
 
-  /* ---------- state machine ---------- */
-  var STATE = 'closed';
+  /* ---------- state ---------- */
+  var isOpen = false;
 
-  function onSealClick(){
-    if (STATE !== 'closed') return;
-    STATE = 'sealBreaking';
-    seal.classList.add('cracked');
-    goldDustBurst();
-    setHint('');
-    hint.classList.add('hidden');
-
-    setTimeout(function(){
-      STATE = 'open';
-      setState('open');
-      setTimeout(function(){
-        STATE = 'card-out';
-        setState('card-out');
-        setHint(' ');
-        setTimeout(function(){
-          seal.classList.add('hidden');
-        }, 300);
-      }, 550);
-    }, 500);
-  }
-
-  function onCardClick(e){
-    e.stopPropagation();
-    if (STATE === 'card-out'){
-      STATE = 'card-open';
-      setState('card-open');
+  function onCardClick(){
+    if (!isOpen){
+      isOpen = true;
+      card.classList.add('open');
       hint.classList.add('hidden');
       setTimeout(function(){
-        STATE = 'celebrating';
-        setState('celebrating');
         startCelebration();
       }, 700);
-    } else if (STATE === 'celebrating' || STATE === 'card-open'){
-      // close everything and slide back
+    } else {
       clearCelebration();
-      STATE = 'closing-cover';
-      setState('card-out'); // flips cover shut while still slid out
-      setTimeout(function(){
-        STATE = 'sliding-in';
-        setState('sliding-in');
-        setTimeout(function(){
-          STATE = 'closed';
-          setState('closed');
-          seal.classList.remove('hidden','cracked');
-          seal.classList.add('restamp');
-          setTimeout(function(){ seal.classList.remove('restamp'); }, 650);
-          setHint('Click the seal to open');
-        }, 1150);
-      }, 750);
+      isOpen = false;
+      card.classList.remove('open');
+      setHint('Click the card to open');
     }
   }
 
-  seal.addEventListener('click', onSealClick);
-  seal.addEventListener('keypress', function(e){ if(e.key==='Enter'||e.key===' ') onSealClick(); });
   card.addEventListener('click', onCardClick);
+  card.addEventListener('keypress', function(e){ if(e.key==='Enter'||e.key===' ') onCardClick(); });
 
   window.addEventListener('resize', function(){
     isMobile = window.innerWidth < 620;
