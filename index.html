@@ -428,7 +428,7 @@
             <div class="candle" style="left:50%;"><div class="flame" style="animation-delay:-.6s;"></div></div>
             <div class="candle" style="left:62%;"><div class="flame" style="animation-delay:-.9s;"></div></div>
           </div>
-          <div class="headline">Happy Birthday<br>Sonechiii ❤️</div>
+          <div class="headline">Happy Birthday<br>Ponaaaa ❤️</div>
           <p class="message" id="messageText">Another year of your beautiful heart lighting up every room you walk into. I hope today wraps you in every bit of the love, laughter, and softness you give so freely to everyone around you. Here's to you, today and always.</p>
           <div class="signoff">With all the love</div>
         </div>
@@ -438,7 +438,7 @@
       </div>
     </div>
 
-    <p id="hint"> </p>
+    <p id="hint">Click the card to open</p>
 
     <button id="gallery-btn" type="button">View Our Memories</button>
 
@@ -684,27 +684,41 @@
   /* ---------- state ---------- */
   var isOpen = false;
 
-  function onCardClick(){
-    if (!isOpen){
-      isOpen = true;
-      card.classList.add('open');
-      hint.classList.add('hidden');
-      setTimeout(function(){
-        startCelebration();
-        galleryBtn.classList.add('visible');
-      }, 700);
-    } else {
-      clearCelebration();
-      isOpen = false;
-      card.classList.remove('open');
-      galleryBtn.classList.remove('visible');
-      closeGallery();
-      setHint(' ');
-    }
+  function openCard(){
+    if (isOpen) return;
+    isOpen = true;
+    card.classList.add('open');
+    hint.classList.add('hidden');
+    setTimeout(function(){
+      startCelebration();
+      galleryBtn.classList.add('visible');
+    }, 700);
   }
 
-  card.addEventListener('click', onCardClick);
-  card.addEventListener('keypress', function(e){ if(e.key==='Enter'||e.key===' ') onCardClick(); });
+  function closeCard(){
+    if (!isOpen) return;
+    clearCelebration();
+    isOpen = false;
+    card.classList.remove('open');
+    galleryBtn.classList.remove('visible');
+    closeGallery();
+  }
+
+  hint.textContent = '';
+  hint.classList.add('hidden');
+
+  // Auto-open shortly after the page loads
+  setTimeout(openCard, 900);
+
+  // Still allow tapping the card to close/reopen it
+  card.addEventListener('click', function(){
+    if (isOpen) closeCard(); else openCard();
+  });
+  card.addEventListener('keypress', function(e){
+    if (e.key==='Enter' || e.key===' '){
+      if (isOpen) closeCard(); else openCard();
+    }
+  });
 
   window.addEventListener('resize', function(){
     isMobile = window.innerWidth < 620;
